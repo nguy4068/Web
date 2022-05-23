@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+            <script>
+              window.addEventListener("load", function(){
+                let home_link = document.getElementById("all_contacts");
+                home_link.classList.add("active");
+                let all_contact_link = document.getElementById("home");
+                all_contact_link.classList.add("active");
+              })
+          </script>
+    <title>My Contacts</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expanded navbar-light bg-light mb-5">
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link" href="/AllContacts" id="home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/Admin">Admin Page</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/AllContacts" id="all_contacts">All Contacts</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/MyContacts">My Contacts</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/AddContact">Add
+            Contact</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/Stock">Stock</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/logout">Log out</a>
+        </li>
+      </ul>
+      <p id="userName">Welcome</p> 
+    </nav> 
+    
+    <div class="container mb-3">
+      <div class="container">
+        <table class="table table-striped" id="contactTable">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Location</th>
+              <th scope="col">Contact Information</th>
+              <th scope="col">Email</th>
+              <th scope="col">Website</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <script>
+    window.addEventListener("load", (event)=>{formTable()});
+    function formTable() {
+      //TODO: Make request and fill table with events for the day
+      $.get("/contactTable", function(response){
+        console.log(response);
+        handleCallback(response);
+      }, "json")
+      
+    }
+    function handleCallback(response){
+            processResponse(response);
+    }
+    function processResponse(response){
+        var list_contacts = response["contacts"];
+        var body = "";
+        var c = ["contact_name", "contact_location", "contact_info", "contact_email", "website_title"];
+
+        for (let i = 0; i < list_contacts.length; i++){
+            let contact = list_contacts[i];
+            console.log(JSON.stringify(contact));
+            body = body + "<tr>"
+            for (let j = 0; j < c.length; j++){
+              console.log(c[j])
+              var data = contact[c[j]]
+              let url = ""
+              if (c[j] === "website_title"){
+              	console.log(contact["website_url"]);
+                url = "<a" + " href='" + contact["website_url"] + "'>" + data + "</a>";
+                body = body + "<td>" + url + "</td>";
+              }else{
+                body = body + "<td>" + data + "</td>";
+              }
+              
+            }
+            body = body + "</tr>"
+        }
+        $('#contactTable tbody').html(body);
+    }
+    
+    function clearTable() {
+      $('#contactTable tbody').empty();
+    }
+    </script>
+  </body>
+</html>
